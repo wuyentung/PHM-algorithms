@@ -118,117 +118,85 @@ def draw_control_chart(data_phase2, cl, sigma, ucl, lcl, anomaly_idx_ls=[], stit
         plt.savefig("%s.png"%stitle)
     pass
 #%%
-def marking(x, y, color='brown', ms=12, lw=8, ls="-", m="o"):
-    # https://matplotlib.org/stable/gallery/userdemo/annotate_text_arrow.html#sphx-glr-gallery-userdemo-annotate-text-arrow-py
-    # https://matplotlib.org/stable/api/_as_gen/matplotlib.lines.Line2D.html#matplotlib.lines.Line2D.set_marker
-    ## alpha: 透明度
-    plt.annotate("%s" %x[-1], xy=(x[-1], y[-1]), verticalalignment='top', horizontalalignment="center", fontsize=50, bbox=dict(boxstyle="round", fc="w", ec="0.5", alpha=0.4)
-    )
-    plt.plot(x, y, linestyle=ls, marker=m, color=color, markersize=ms, linewidth=lw)
-    pass
-#%%
-def mark_anomaly(idx_ls, data, color="brown", ms=12, lw=8, ls="-", m="o", one_more_node=True):
+def mark_anomaly(idx_ls:list, data:list, color:str, ls="-", m="o", one_more_node=True):
+    """為每個有異常的資料加註醒目標示
+
+    Args:
+        idx_ls (list): 不同段異常資料的起始 index 值
+        data (list): phase2 資料
+        color (str): 要使用的顏色
+        ls (str, optional): [description]. Defaults to "-".
+        m (str, optional): [description]. Defaults to "o".
+        one_more_node (bool, optional): [description]. Defaults to True.
+    """
     for anomaly_idx in idx_ls:
+        #TODO 為何要 one_more_node?
         if one_more_node:
             last_anomaly_idx = anomaly_idx + [anomaly_idx[-1]+1]
         else:
             last_anomaly_idx = anomaly_idx
-        marking(x=last_anomaly_idx, y=data[last_anomaly_idx[0]:last_anomaly_idx[-1]+1], color=color, ms=ms, lw=lw, ls=ls, m=m)
+        x=last_anomaly_idx
+        y=data[last_anomaly_idx[0]:last_anomaly_idx[-1]+1]
+        
+        # https://matplotlib.org/stable/gallery/userdemo/annotate_text_arrow.html#sphx-glr-gallery-userdemo-annotate-text-arrow-py
+        # https://matplotlib.org/stable/api/_as_gen/matplotlib.lines.Line2D.html#matplotlib.lines.Line2D.set_marker
+        ## 以下是把有問題的序列最後一個 subgroup 標註起來的程式碼，留下來供參
+        ## alpha: 白色方框的透明度
+        # plt.annotate("%s" %x[-1], xy=(x[-1], y[-1]), verticalalignment='top', horizontalalignment="center", fontsize=GLOBAL.TEXT_SIZE, bbox=dict(boxstyle="round", fc="w", ec="0.5", alpha=0.4))
+        plt.plot(x, y, linestyle=ls, marker=m, color=color, markersize=GLOBAL.MARKER_SIZE+10, linewidth=GLOBAL.LINE_WIDTH+10)
     pass
+def grouping_samples(data_ls:list, subgroup_size:int):
+    ## 將資料依 sample size 區隔，最後一組如果有不滿 sample size 則捨去
+
+    n_subgroups = len(data_ls) // subgroup_size ## 一共有多少組 subgroup
+    grouped_data_ls = [data_ls[i:i+subgroup_size] for i in range(0, n_subgroups*subgroup_size, subgroup_size)]
+    
+    ## 留下最後一組的程式碼如下，以下方法將把不足的最後一組以中位數方式補齊
+    # if len(data_ls) % sample_size:
+    #     last_sample = data_ls[n_groups * sample_size:]
+    #     while len(last_sample) < sample_size:
+    #         last_sample.append(np.median(last_sample))
+    #     grouped_data_ls.append(last_sample)
+    #     n_groups += 1
+    
+    return grouped_data_ls, n_subgroups
 #%%
-def plot_xbar_with_S(Xbar_ucl, Xbar_cl, Xbar_lcl, Xbar_sigma, S_ucl, S_cl, S_lcl, S_sigma, x_bar_phase2, s_phase2, save=False, stitle="", vert_line=[], anomaly_idx_ls=[], sliding_anomaly_idx_ls=[], measurement3_idx_ls=[]):
-    
-    plt.figure(figsize=(50, 30))
-    
-    plt.subplot(2, 1, 1)
-    draw_control_chart(data_phase2=x_bar_phase2, cl=Xbar_cl, sigma=Xbar_sigma, ucl=Xbar_ucl, lcl=Xbar_lcl, anomaly_idx_ls=anomaly_idx_ls, stitle="x bar chart %s" %stitle, sy="x bar", sx=False, trace=False, save=False)
-    mark_anomaly(idx_ls=anomaly_idx_ls, data=x_bar_phase2, ms=16, lw=12, ls="-", m="o")
-    mark_anomaly(idx_ls=sliding_anomaly_idx_ls, data=x_bar_phase2, color="purple", lw=8, ms=16, one_more_node=False)
-    for v in measurement3_idx_ls:
-        plt.axvline(x=v, color="red", lw=2)
-    for v in vert_line:
-        plt.axvline(x=v, color="darkblue", lw=2)
-    
-    plt.subplot(2, 1, 2)
-    draw_control_chart(data_phase2=s_phase2, cl=S_cl, sigma=S_sigma, ucl=S_ucl, lcl=S_lcl, anomaly_idx_ls=anomaly_idx_ls, stitle="S chart %s" %stitle, sy="S", trace=False, save=False, title_size=100)
-    mark_anomaly(idx_ls=anomaly_idx_ls, data=s_phase2, ms=16, lw=12, ls="-", m="o")
-    mark_anomaly(idx_ls=sliding_anomaly_idx_ls, data=s_phase2, color="purple", lw=8, ms=16, one_more_node=False)
-    for v in measurement3_idx_ls:
-        plt.axvline(x=v, color="red", lw=2)
-    for v in vert_line:
-        plt.axvline(x=v, color="darkblue", lw=2)
-    if save:
-        plt.savefig("X bar with S %s.png" %stitle)
-    plt.show()
-    pass
 #%%
-def x_bar_S (phase1_ls, phase2_ls, sample_size=30, measurment_anomaly=False, \
+def x_bar_S (phase1_ls, phase2_ls, subgroup_size=30, measurment_anomaly=False, \
     manufacturing_anomaly=False, window_size=10, alpha=0.05, stitle="x bar with S chart", \
         xlabel="subgroup", ylabel=["subgroup x bar", "subgroup S"], path="", fast=False, save_fig=False):
+
+    ## 把 phase1, phase2 的資料依照 sample size 分好
+    grouped_x_phase1, n_subgroups_phase1 = grouping_samples(data_ls=phase1_ls, subgroup_size=subgroup_size)
+    grouped_x_phase2, n_subgroups_phase2 = grouping_samples(data_ls=phase2_ls, subgroup_size=subgroup_size)
+
+    ## 設定 x bar S chart 的各種參數
+    c4 = C4[subgroup_size]
     
-    c4 = C4[sample_size]
-    x_phase1 = phase1_ls
-    x_phase2 = phase2_ls
-    s = [np.std(sample, ddof=1) for sample in x_phase1]
-    s_phase2 = [np.std(sample, ddof=1) for sample in x_phase2]
-    s_bar = np.mean(s)
+    s_bar = np.mean([np.std(sample, ddof=1) for sample in grouped_x_phase1])
+    s_phase2 = [np.std(sample, ddof=1) for sample in grouped_x_phase2]
     
     S_sigma = s_bar*((1 - c4**2)**0.5)/c4
     S_ucl = s_bar + 3*S_sigma
     S_lcl = 0
     S_cl = s_bar
     
-    x_bar = [np.mean(sample) for sample in x_phase1]
-    x_bar_phase2 = [np.mean(sample) for sample in x_phase2]
+    x_bar = [np.mean(sample) for sample in grouped_x_phase1]
+    x_bar_phase2 = [np.mean(sample) for sample in grouped_x_phase2]
     x_bar_bar = np.mean(x_bar)
     
-    Xbar_sigma = s_bar / (c4 * sample_size ** 0.5)
+    Xbar_sigma = s_bar / (c4 * subgroup_size ** 0.5)
     Xbar_ucl = x_bar_bar + 3*Xbar_sigma
     Xbar_lcl = x_bar_bar - 3*Xbar_sigma
     Xbar_cl = x_bar_bar
-
-    ## setting
-    stitle = "%s_%s_%s_%s" %(swiitem, mch_id, target_col, alpha)
-    df = filt_df(df=df, swiitem=swiitem, mch_id=mch_id, col_name=[target_col, "ADVICEVALUE", "ACTUALVALUE", "GAP"], sort_ref=sort_ref)
-
-    ## data segment
-    grouped_x_phase1, n_x_phase1 = grouping_samples(data_ls=df[target_col].to_list())
-    grouped_x_phase2, n_x_phase2 = grouping_samples(data_ls=df[target_col].to_list())
-
-    Xbar_ucl, Xbar_cl, Xbar_lcl, Xbar_sigma, S_ucl, S_cl, S_lcl, S_sigma, x_bar_phase2, s_phase2 = set_Xbar_with_S(x_phase1=grouped_x_phase1, x_phase2=grouped_x_phase2)
     
-    ## setting phase2 and charts info
-    x_bar_chart = Ctrl_chart(ucl=Xbar_ucl, cl=Xbar_cl, lcl=Xbar_lcl, sigma=Xbar_sigma)
-    s_chart = Ctrl_chart(ucl=S_ucl, cl=S_cl, lcl=S_lcl, sigma=S_sigma)
-    phase2 = Phase2(
-        name="%s_%s" % (mch_id, swiitem), 
-        sys_time=df.index.tolist(), 
-        norm_gap=df["NORM_GAP"].to_list(), 
-        subgroup_idx=np.arange(n_x_phase1).tolist(),
-        x_bar = x_bar_phase2, 
-        s = s_phase2, 
-        col_name=["SYS_TIME", "NORM_GAP", "subgroup_idx", "x_bar", "s"]
-        )
-    phase2.add_feature(feature_name="ADVICE_VALUE", ls=df["ADVICEVALUE"].to_list())
-    phase2.add_feature(feature_name="ACTUAL_VALUE", ls=df["ACTUALVALUE"].to_list())
-    phase2.add_feature(feature_name="GAP", ls=df["GAP"].to_list())
 
 
-    ## measurement anomaly detection
+    ## 
     anomaly_idx_ls = []
     if detect_measurement_anomaly[0]:
         anomaly_idx_ls = detect_anomaly(method="measurement 1", window_size=LENGTH, x_bar_chart=x_bar_chart, s_chart=s_chart, phase2=phase2, alpha=alpha)
 
-    sliding_anomaly_idx_ls = []
-    if detect_measurement_anomaly[1]:
-        sliding_anomaly_idx_ls, sliding_beta1_ls = detect_anomaly(method="measurement 2.5", window_size=LENGTH, x_bar_chart=x_bar_chart, s_chart=s_chart, phase2=phase2, alpha=alpha)
-        phase2.add_feature(feature_name="sliding_beta1", ls=sliding_beta1_ls)
-        phase2.add_feature(feature_name="is_sliding_anomaly", ls=[idx_ls[-1] for idx_ls in sliding_anomaly_idx_ls], is_anomaly_idx=True)
-
-    measurement3_idx_ls = []
-    if detect_measurement_anomaly[2]:
-        measurement3_idx_ls = detect_anomaly(method="measurement 3.1", window_size=LENGTH, x_bar_chart=x_bar_chart, s_chart=s_chart, phase2=phase2, alpha=alpha)
-    
     ## don't plot to save time
     if fast:
         return phase2, x_bar_chart, s_chart
@@ -238,15 +206,15 @@ def x_bar_S (phase1_ls, phase2_ls, sample_size=30, measurment_anomaly=False, \
     
     plt.subplot(2, 1, 1)
     draw_control_chart(data_phase2=x_bar_phase2, cl=Xbar_cl, sigma=Xbar_sigma, ucl=Xbar_ucl, lcl=Xbar_lcl, anomaly_idx_ls=anomaly_idx_ls, stitle="x bar chart %s" %stitle, sy="x bar", sx=False, trace=False, save=False)
-    mark_anomaly(idx_ls=anomaly_idx_ls, data=x_bar_phase2, ms=16, lw=12, ls="-", m="o")
-    mark_anomaly(idx_ls=sliding_anomaly_idx_ls, data=x_bar_phase2, color="purple", lw=8, ms=16, one_more_node=False)
+    mark_anomaly(idx_ls=anomaly_idx_ls, data=x_bar_phase2, color="brown", ls="-", m="o")
+    mark_anomaly(idx_ls=sliding_anomaly_idx_ls, data=x_bar_phase2, color="purple", one_more_node=False)
     
         
     
     plt.subplot(2, 1, 2)
     draw_control_chart(data_phase2=s_phase2, cl=S_cl, sigma=S_sigma, ucl=S_ucl, lcl=S_lcl, anomaly_idx_ls=anomaly_idx_ls, stitle="S chart %s" %stitle, sy="S", trace=False, save=False, title_size=100)
-    mark_anomaly(idx_ls=anomaly_idx_ls, data=s_phase2, ms=16, lw=12, ls="-", m="o")
-    mark_anomaly(idx_ls=sliding_anomaly_idx_ls, data=s_phase2, color="purple", lw=8, ms=16, one_more_node=False)
+    mark_anomaly(idx_ls=anomaly_idx_ls, data=s_phase2, color="brown", ls="-", m="o")
+    mark_anomaly(idx_ls=sliding_anomaly_idx_ls, data=s_phase2, color="purple", one_more_node=False)
     
     if save_fig:
         plt.savefig("%s.png" %stitle)
