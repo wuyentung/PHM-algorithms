@@ -48,7 +48,7 @@ def detecting_sliding_anomaly(x_bar:list, s:list, S_ucl:float, alpha:float):
         alpha (float): 顯著水準
 
     Returns:
-        String: 偵測的結果，回傳將在 function XXX 中判斷是否為製程或是量測異常
+        String: 偵測的結果，回傳內容將在 function x_bar_S 中以 if else 判斷為製程或是量測異常
     """
     # quantile regression:
     # https://www.statsmodels.org/dev/examples/notebooks/generated/quantile_regression.html
@@ -60,7 +60,7 @@ def detecting_sliding_anomaly(x_bar:list, s:list, S_ucl:float, alpha:float):
     QR_x_bar = smf.quantreg("x_bar ~ " + col_name, x_bar_df).fit()
     # X bar 的係數值: QR_x_bar.params[1]
     
-    ## 檢查 x bar 的 quantile regression 是否顯著
+    ## 檢查 x bar 的 quantile regression 是否顯著，判斷是否有異常
     if QR_x_bar.pvalues[1] >= alpha:
         return "X bar 沒有趨勢"
 
@@ -68,16 +68,16 @@ def detecting_sliding_anomaly(x_bar:list, s:list, S_ucl:float, alpha:float):
     s_df = pd.DataFrame([[i+1, s[i]] for i in range(LENGTH)], columns=[col_name, "s"])
     QR_s = smf.quantreg("s ~ " + col_name, s_df).fit()
     
-    ## 檢查 S 的 quantile regression 是否顯著
+    ## 檢查 S 的 quantile regression 是否顯著，判斷異常型態
     if QR_s.pvalues[1] >= alpha:
         ## 檢查 S 的中位數是否有超過 S chart 的 UCL
         if np.median(s) >= S_ucl:
-            return "type 5"
-        return "type 6"
+            return "type 5; manufacturing anomaly"
+        return "type 6; measurement anomaly"
     ## 檢查 S 的斜率方向
     if QR_s.params[1] > 0:
-        return "type 1, 2"
-    return "type 3, 4"
+        return "type 1, 2; manufacturing anomaly"
+    return "type 3, 4; measurement anomaly"
 #%%
 def x_bar_S (phase1_ls, phase2_ls, subgroup=30, measurment_anomaly=False, \
     manufacturing_anomaly=False, window_size=10, alpha=0.05, stitle="x bar with S chart", \
