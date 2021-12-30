@@ -5,7 +5,6 @@ import scipy as sc
 import matplotlib as plt
 import statsmodels
 import statsmodels.formula.api as smf
-import GLOBAL
 #%%
 C4 = {
     2 : 0.7979,
@@ -76,37 +75,51 @@ def detecting_sliding_anomaly(x_bar:list, s:list, S_ucl:float, alpha:float):
         return "type 1, 2; manufacturing anomaly"
     return "type 3, 4; measurement anomaly"
 #%%
-def draw_control_chart(data_phase2, cl, sigma, ucl, lcl, stitle, sy, sx, save=False, text_size=30, title_size=120, lable_size=100, tick_size=30):
+def draw_control_chart(data_phase2, cl, sigma, ucl, lcl, stitle, sy, sx, text_size=100, title_size=150, lable_size=100, tick_size=100, round_to=4, LINE_WIDTH=20, MARKER_SIZE=50):
     # https://matplotlib.org/stable/gallery/subplots_axes_and_figures/subplot.html#sphx-glr-gallery-subplots-axes-and-figures-subplot-py
     # figsize should be set in upper fuction
-    cl = round(cl, GLOBAL.ROUND_TO)
-    ucl = round(ucl, GLOBAL.ROUND_TO)
-    lcl = round(lcl, GLOBAL.ROUND_TO)
+    ## 圖片顯示數字的小數點位數
     
-    plt.plot(data_phase2, linestyle='-', marker='o', color='black')
-    plt.axhline((ucl), color='red', linestyle='--')
-    plt.axhline((lcl), color='red', linestyle='--')
+    cl = round(cl, round_to)
+    ucl = round(ucl, round_to)
+    lcl = round(lcl, round_to)
+    
+    ## 主要折線線段(粗細20)，轉折點以圓點（大小50）表示，顏色黑色
+    plt.plot(data_phase2, linestyle='-', marker='o', color='black', markersize=MARKER_SIZE, linewidth=LINE_WIDTH)
+    
+    ## 管制圖 UCL, LCL，以紅色虛線表示
+    plt.axhline((ucl), color='red', linestyle='--', markersize=MARKER_SIZE, linewidth=LINE_WIDTH)
+    plt.axhline((lcl), color='red', linestyle='--', markersize=MARKER_SIZE, linewidth=LINE_WIDTH)
+    
+    ## 管制圖上下一倍、兩倍標準差，以暗紅色虛線表示
     if (cl + sigma) < ucl:
-        plt.axhline((cl + sigma), color='darkred', linestyle=':')
+        plt.axhline((cl + sigma), color='darkred', linestyle=':', markersize=MARKER_SIZE, linewidth=LINE_WIDTH)
     if (cl + 2*sigma) < ucl:
-        plt.axhline((cl + 2*sigma), color='darkred', linestyle=':')
+        plt.axhline((cl + 2*sigma), color='darkred', linestyle=':', markersize=MARKER_SIZE, linewidth=LINE_WIDTH)
     if (cl - sigma) > lcl:
-        plt.axhline((cl - sigma), color='darkred', linestyle=':')
+        plt.axhline((cl - sigma), color='darkred', linestyle=':', markersize=MARKER_SIZE, linewidth=LINE_WIDTH)
     if (cl - 2*sigma) > lcl:
-        plt.axhline((cl - 2*sigma), color='darkred', linestyle=':')
+        plt.axhline((cl - 2*sigma), color='darkred', linestyle=':', markersize=MARKER_SIZE, linewidth=LINE_WIDTH)
+    
+    ## 管制圖 CL，以藍色虛線表示
     plt.axhline(cl, color='blue')
-    plt.text(x=-0.05, y=ucl, s="UCL=%s" %ucl, fontsize=text_size, c="r")
-    plt.text(x=-0.05, y=lcl, s="LCL=%s" %lcl, fontsize=text_size, c="r")
+    
+    ## 顯示管制圖 UCL, LCL, CL 上的數值
+    plt.text(x=-0.05, y=ucl, s="UCL=%s" %ucl, fontsize=text_size, c="red")
+    plt.text(x=-0.05, y=lcl, s="LCL=%s" %lcl, fontsize=text_size, c="red")
     plt.text(x=-0.065, y=cl, s="center line=%s" %cl, fontsize=text_size, c="blue")
-    if stitle:
-        plt.title('%s' %stitle, fontsize=title_size)
+    
+    ## 設定管制圖標題
+    plt.title('%s' %stitle, fontsize=title_size)
+    
+    ## 設定管制圖 x 軸文字，因 x bar 子圖不需要所以以 flag 的方式處理
     if sx:
         plt.xlabel("%s" %sx, fontsize=lable_size)
     plt.xticks(fontsize=tick_size)
+    
+    ## 設定管制圖 y 軸文字
     plt.ylabel("%s" %sy, fontsize=lable_size)
     plt.yticks(fontsize=tick_size)
-    if save:
-        plt.savefig("%s.png"%stitle)
     pass
 #%%
 def mark_anomaly(indice:list, data:list, color:str, ls="-", m="o"):
@@ -116,8 +129,8 @@ def mark_anomaly(indice:list, data:list, color:str, ls="-", m="o"):
         indice (list): 不同段異常資料的起始 index 值
         data (list): phase2 資料
         color (str): 要使用的顏色
-        ls (str, optional): [description]. Defaults to "-".
-        m (str, optional): [description]. Defaults to "o".
+        ls (str, optional): 醒目折線定義. Defaults to "-".
+        m (str, optional): 資料點以圓點標示. Defaults to "o".
     """
     for anomaly_idx in indice:
         # https://matplotlib.org/stable/gallery/userdemo/annotate_text_arrow.html#sphx-glr-gallery-userdemo-annotate-text-arrow-py
@@ -130,7 +143,7 @@ def mark_anomaly(indice:list, data:list, color:str, ls="-", m="o"):
         # plt.annotate("%s" %x[-1], xy=(x[-1], y[-1]), verticalalignment='top', horizontalalignment="center", fontsize=GLOBAL.TEXT_SIZE, bbox=dict(boxstyle="round", fc="w", ec="0.5", alpha=0.4))
         
         ## 加粗異常資料
-        plt.plot(x, y, linestyle=ls, marker=m, color=color, markersize=GLOBAL.MARKER_SIZE+10, linewidth=GLOBAL.LINE_WIDTH+10)
+        plt.plot(x, y, linestyle=ls, marker=m, color=color, markersize=50+10, linewidth=20+10)
     pass
 #%%
 def grouping_samples(data_ls:list, subgroup_size:int):
@@ -201,16 +214,19 @@ def x_bar_S (phase1_ls, phase2_ls, subgroup_size=30, measurment_anomaly=False, \
         return x_bar_phase2, s_phase2, manufacturing_indice, measurement_indice, Xbar_ucl, Xbar_lcl, Xbar_cl, S_ucl
     
     ## plot x bar S chart
-    plt.figure(figsize=GLOBAL.FIGSIZE)
+    ## figsize: 圖片大小
+    plt.figure(figsize=(200, 100))
+    
+    ## 圖片會分上下兩張子圖繪製，上方是 x bar chart，下方是 S chart
     ## x bar chart
     plt.subplot(2, 1, 1)
-    draw_control_chart(data_phase2=x_bar_phase2, cl=Xbar_cl, sigma=Xbar_sigma, ucl=Xbar_ucl, lcl=Xbar_lcl, anomaly_idx_ls=manufacturing_indice, stitle="x bar chart %s" %stitle, sy="x bar", sx=False, trace=False, save=False)
+    draw_control_chart(data_phase2=x_bar_phase2, cl=Xbar_cl, sigma=Xbar_sigma, ucl=Xbar_ucl, lcl=Xbar_lcl, anomaly_idx_ls=manufacturing_indice, stitle="x bar chart %s" %stitle, sx=False, sy=ylabel[0])
     mark_anomaly(indice=manufacturing_indice, data=x_bar_phase2, color="brown") # 棕色給製程異常
     mark_anomaly(indice=measurement_indice, data=x_bar_phase2, color="purple") # 紫色給量測異常
     
     ## S chart
     plt.subplot(2, 1, 2)
-    draw_control_chart(data_phase2=s_phase2, cl=S_cl, sigma=S_sigma, ucl=S_ucl, lcl=S_lcl, anomaly_idx_ls=manufacturing_indice, stitle="S chart %s" %stitle, sy="S", trace=False, save=False, title_size=100)
+    draw_control_chart(data_phase2=s_phase2, cl=S_cl, sigma=S_sigma, ucl=S_ucl, lcl=S_lcl, anomaly_idx_ls=manufacturing_indice, stitle="S chart %s" %stitle, sx=xlabel, sy=ylabel[1])
     mark_anomaly(indice=manufacturing_indice, data=s_phase2, color="brown")
     mark_anomaly(indice=measurement_indice, data=s_phase2, color="purple")
     
