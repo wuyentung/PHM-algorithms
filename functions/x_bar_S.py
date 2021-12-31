@@ -2,7 +2,7 @@
 import pandas as pd
 import numpy as np
 import scipy as sc
-import matplotlib as plt
+import matplotlib.pyplot as plt
 import statsmodels
 import statsmodels.formula.api as smf
 #%%
@@ -122,12 +122,13 @@ def draw_control_chart(data_phase2, cl, sigma, ucl, lcl, stitle, sy, sx, text_si
     plt.yticks(fontsize=tick_size)
     pass
 #%%
-def mark_anomaly(indice:list, data:list, color:str, ls="-", m="o"):
+def mark_anomaly(indice:list, data_phase2:list, window_size:int, color:str, ls="-", m="o"):
     """為每個有異常的資料加註醒目標示
 
     Args:
         indice (list): 不同段異常資料的起始 index 值
-        data (list): phase2 資料
+        data_phase2 (list): phase2 資料
+        window_size (int): 移動時窗大小
         color (str): 要使用的顏色
         ls (str, optional): 醒目折線定義. Defaults to "-".
         m (str, optional): 資料點以圓點標示. Defaults to "o".
@@ -135,15 +136,13 @@ def mark_anomaly(indice:list, data:list, color:str, ls="-", m="o"):
     for anomaly_idx in indice:
         # https://matplotlib.org/stable/gallery/userdemo/annotate_text_arrow.html#sphx-glr-gallery-userdemo-annotate-text-arrow-py
         # https://matplotlib.org/stable/api/_as_gen/matplotlib.lines.Line2D.html#matplotlib.lines.Line2D.set_marker
-        x=anomaly_idx
-        y=data[anomaly_idx[0]:anomaly_idx[-1]+1]
         
         ## 以下是把有問題的序列最後一個 subgroup 標註起來的程式碼，留下來供參
         ## alpha: 白色方框的透明度
         # plt.annotate("%s" %x[-1], xy=(x[-1], y[-1]), verticalalignment='top', horizontalalignment="center", fontsize=GLOBAL.TEXT_SIZE, bbox=dict(boxstyle="round", fc="w", ec="0.5", alpha=0.4))
         
         ## 加粗異常資料
-        plt.plot(x, y, linestyle=ls, marker=m, color=color, markersize=50+10, linewidth=20+10)
+        plt.plot(np.arange(anomaly_idx, anomaly_idx+window_size), data_phase2[anomaly_idx:anomaly_idx+window_size], linestyle=ls, marker=m, color=color, markersize=50+10, linewidth=20+10)
     pass
 #%%
 def grouping_samples(data_ls:list, subgroup_size:int):
@@ -162,8 +161,7 @@ def grouping_samples(data_ls:list, subgroup_size:int):
     
     return grouped_data_ls, n_subgroups
 #%%
-def x_bar_S (phase1_ls, phase2_ls, subgroup_size=30, measurment_anomaly=False, \
-    manufacturing_anomaly=False, window_size=10, alpha=0.05, stitle="x bar with S chart", \
+def x_bar_S (phase1_ls, phase2_ls, subgroup_size=30, manufacturing_anomaly=False, measurment_anomaly=False, window_size=10, alpha=0.05, stitle="x bar with S chart", \
         xlabel="subgroup", ylabel=["subgroup x bar", "subgroup S"], path="", fast=False, save_fig=False):
 
     ## 把 phase1, phase2 的資料依照 sample size 分好
@@ -220,17 +218,26 @@ def x_bar_S (phase1_ls, phase2_ls, subgroup_size=30, measurment_anomaly=False, \
     ## 圖片會分上下兩張子圖繪製，上方是 x bar chart，下方是 S chart
     ## x bar chart
     plt.subplot(2, 1, 1)
-    draw_control_chart(data_phase2=x_bar_phase2, cl=Xbar_cl, sigma=Xbar_sigma, ucl=Xbar_ucl, lcl=Xbar_lcl, anomaly_idx_ls=manufacturing_indice, stitle="x bar chart %s" %stitle, sx=False, sy=ylabel[0])
-    mark_anomaly(indice=manufacturing_indice, data=x_bar_phase2, color="brown") # 棕色給製程異常
-    mark_anomaly(indice=measurement_indice, data=x_bar_phase2, color="purple") # 紫色給量測異常
+    draw_control_chart(data_phase2=x_bar_phase2, cl=Xbar_cl, sigma=Xbar_sigma, ucl=Xbar_ucl, lcl=Xbar_lcl, stitle="x bar chart %s" %stitle, sx=False, sy=ylabel[0])
+    mark_anomaly(indice=manufacturing_indice, data_phase2=x_bar_phase2, window_size=window_size, color="brown") # 棕色給製程異常
+    mark_anomaly(indice=measurement_indice, data_phase2=x_bar_phase2, window_size=window_size, color="purple") # 紫色給量測異常
     
     ## S chart
     plt.subplot(2, 1, 2)
-    draw_control_chart(data_phase2=s_phase2, cl=S_cl, sigma=S_sigma, ucl=S_ucl, lcl=S_lcl, anomaly_idx_ls=manufacturing_indice, stitle="S chart %s" %stitle, sx=xlabel, sy=ylabel[1])
-    mark_anomaly(indice=manufacturing_indice, data=s_phase2, color="brown")
-    mark_anomaly(indice=measurement_indice, data=s_phase2, color="purple")
+    draw_control_chart(data_phase2=s_phase2, cl=S_cl, sigma=S_sigma, ucl=S_ucl, lcl=S_lcl, stitle="S chart %s" %stitle, sx=xlabel, sy=ylabel[1])
+    mark_anomaly(indice=manufacturing_indice, data_phase2=s_phase2, window_size=window_size, color="brown")
+    mark_anomaly(indice=measurement_indice, data_phase2=s_phase2, window_size=window_size, color="purple")
     
     if save_fig:
         plt.savefig("%s.png" %stitle)
         
     return x_bar_phase2, s_phase2, manufacturing_indice, measurement_indice, Xbar_ucl, Xbar_lcl, Xbar_cl, S_ucl
+#%%
+## unit test
+if __name__ == "__main__":
+    phase1 = np.random.normal(size=200)
+    phase2 = np.random.normal(size=2000, loc=.1, scale=.3)+np.arange(1, 3, 0.2).tolist()*200
+    #%%
+    # stuff = x_bar_S(phase1_ls=phase1, phase2_ls=phase2v2)
+    stuff = x_bar_S(phase1_ls=phase1, phase2_ls=phase2, measurment_anomaly=True, manufacturing_anomaly=True)
+    #%%

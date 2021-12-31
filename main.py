@@ -2,7 +2,7 @@
 import pandas as pd
 import numpy as np
 import scipy as sc
-import matplotlib as plt
+import matplotlib.pyplot as plt
 
 from functions.chamber2chamber import chamber2chamber
 from functions.ewma import ewma
