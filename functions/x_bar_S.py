@@ -229,7 +229,7 @@ def x_bar_S (phase1_ls, phase2_ls, subgroup_size=30, manufacturing_anomaly=False
     mark_anomaly(indice=measurement_indice, data_phase2=s_phase2, window_size=window_size, color="purple")
     
     if save_fig:
-        plt.savefig("%s.png" %stitle)
+        plt.savefig("%s%s.png" %(path, stitle))
         
     return x_bar_phase2, s_phase2, manufacturing_indice, measurement_indice, Xbar_ucl, Xbar_lcl, Xbar_cl, S_ucl
 #%%
@@ -239,5 +239,5 @@ if __name__ == "__main__":
     phase2 = np.random.normal(size=2000, loc=.1, scale=.3)+np.arange(1, 3, 0.2).tolist()*200
     #%%
     # stuff = x_bar_S(phase1_ls=phase1, phase2_ls=phase2v2)
-    stuff = x_bar_S(phase1_ls=phase1, phase2_ls=phase2, measurment_anomaly=True, manufacturing_anomaly=True)
+    stuff = x_bar_S(phase1_ls=phase1, phase2_ls=phase2, measurment_anomaly=True, manufacturing_anomaly=True, save_fig=True)
     #%%
