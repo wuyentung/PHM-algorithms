@@ -18,13 +18,15 @@ def detect_outlier(data_1:pd.Series, threshold:float):
 #%%
 def chamber2chamber(df:pd.DataFrame, col_groupby:str, col_value:str, stitle="chamber", xlabel="all", ylabel="machine", path="", fast=False, save_fig=False):
     
-    sta_method="var"
+    sta_method="std"
     if "mean" == sta_method:
         values = df.groupby(by=col_groupby).mean()[col_value]
     elif "median" == sta_method:
         values = df.groupby(by=col_groupby).median()[col_value]
     elif "var" == sta_method:
         values = df.groupby(by=col_groupby).var()[col_value]
+    elif "std" == sta_method:
+        values = df.groupby(by=col_groupby).std()[col_value]
     
     
     group1 = detect_outlier(values, threshold=2)
@@ -40,7 +42,16 @@ def chamber2chamber(df:pd.DataFrame, col_groupby:str, col_value:str, stitle="cha
     tick_size = 100
     text_size = 100
     plt.figure(figsize=(200, 100))
-    plt.boxplot(values, showmeans=True)
+    # https://matplotlib.org/stable/gallery/statistics/boxplot.html
+    plt.boxplot(
+        values, showmeans=True, meanline=True, 
+        boxprops=dict(linewidth=20), 
+        medianprops=dict(linewidth=20), 
+        whiskerprops=dict(linewidth=20), 
+        capprops=dict(linewidth=20), 
+        meanprops=dict(linewidth=20, linestyle='--', color="purple"), 
+        flierprops=dict(markersize=50, marker='o', markerfacecolor='black'), 
+        )
     plt.title("%s" %stitle, fontsize=title_size)
     plt.xlabel("%s" %xlabel, fontsize=lable_size)
     plt.ylabel("%s" %ylabel, fontsize=lable_size)
