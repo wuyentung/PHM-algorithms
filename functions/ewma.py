@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-import matplotlib as plt
+import matplotlib.pyplot as plt
 
 
 def ewma(phase1_list, phase2_list, alpha, L, stitle, xlabel, ylabel, path=""):
