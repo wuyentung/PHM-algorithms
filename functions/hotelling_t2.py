@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import scipy as sc
-import matplotlib as plt
+import matplotlib.pyplot as plt
 from scipy import stats
 
 def hotelling_t2(phase1_df, phase2_df, alpha, stitle, xlabel, ylabel, path=""):
@@ -13,7 +13,7 @@ def hotelling_t2(phase1_df, phase2_df, alpha, stitle, xlabel, ylabel, path=""):
         v = phase1_df.diff()[1:] 
         s = np.cov(phase1_df.T)
         x = np.array((phase1_df - phase1_df.mean()).iloc[i]).reshape(-1,1)
-        t = np.dot(x.T,np.linalg.inv(s))
+        t = np.dot(x.T,np.linalg.pinv(s))
         t = np.dot(t,x)[0][0]
         out.append(t)
         
