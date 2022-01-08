@@ -46,7 +46,7 @@ def detecting_sliding_anomaly(x_bar:list, s:list, S_ucl:float, alpha:float):
     Returns:
         String: 偵測的結果，回傳內容將在 function x_bar_S 中以 if else 判斷為製程或是量測異常
     """
-    # quantile regression:
+    # quantile regression 使用細節:
     # https://www.statsmodels.org/dev/examples/notebooks/generated/quantile_regression.html
     # https://www.statsmodels.org/stable/generated/statsmodels.regression.quantile_regression.QuantReg.fit.html#statsmodels.regression.quantile_regression.QuantReg.fit
     
@@ -75,15 +75,15 @@ def detecting_sliding_anomaly(x_bar:list, s:list, S_ucl:float, alpha:float):
         return "type 1, 2; manufacturing anomaly"
     return "type 3, 4; measurement anomaly"
 #%%
-def draw_control_chart(data_phase2, cl, sigma, ucl, lcl, stitle, sy, sx, text_size=100, title_size=150, lable_size=100, tick_size=100, round_to=4, LINE_WIDTH=20, MARKER_SIZE=50):
+def draw_control_chart(data_phase2, cl, sigma, ucl, lcl, stitle, sy, sx=False, text_size=100, title_size=150, lable_size=100, tick_size=100, round_to=4, LINE_WIDTH=20, MARKER_SIZE=50):
     # https://matplotlib.org/stable/gallery/subplots_axes_and_figures/subplot.html#sphx-glr-gallery-subplots-axes-and-figures-subplot-py
-    # figsize should be set in upper fuction
-    ## 圖片顯示數字的小數點位數
     
+    ## 圖片顯示數字的小數點位數
     cl = round(cl, round_to)
     ucl = round(ucl, round_to)
     lcl = round(lcl, round_to)
     
+    ## linewidth:線條寬度, linestyle: 線條樣式, color:線條顏色, markersize:點大小, fontsize:字大小
     ## 主要折線線段(粗細20)，轉折點以圓點（大小50）表示，顏色黑色
     plt.plot(data_phase2, linestyle='-', marker='o', color='black', markersize=MARKER_SIZE, linewidth=LINE_WIDTH)
     
@@ -104,6 +104,7 @@ def draw_control_chart(data_phase2, cl, sigma, ucl, lcl, stitle, sy, sx, text_si
     ## 管制圖 CL，以藍色虛線表示
     plt.axhline(cl, color='blue')
     
+    ## x: 文字顯示的 x 軸位置, y: 文字顯示的 y 軸位置, s: 顯示文字內容, c: 文字顏色
     ## 顯示管制圖 UCL, LCL, CL 上的數值
     plt.text(x=-0.05, y=ucl, s="UCL=%s" %ucl, fontsize=text_size, c="red")
     plt.text(x=-0.05, y=lcl, s="LCL=%s" %lcl, fontsize=text_size, c="red")
@@ -145,13 +146,13 @@ def mark_anomaly(indice:list, data_phase2:list, window_size:int, color:str, ls="
         plt.plot(np.arange(anomaly_idx, anomaly_idx+window_size), data_phase2[anomaly_idx:anomaly_idx+window_size], linestyle=ls, marker=m, color=color, markersize=50+10, linewidth=20+10)
     pass
 #%%
-def grouping_samples(data_ls:list, subgroup_size:int):
+def grouping_samples(data_list:list, subgroup_size:int):
     ## 將資料依 sample size 區隔，最後一組如果有不滿 sample size 則捨去
 
-    n_subgroups = len(data_ls) // subgroup_size ## 一共有多少組 subgroup
-    grouped_data_ls = [data_ls[i:i+subgroup_size] for i in range(0, n_subgroups*subgroup_size, subgroup_size)]
+    n_subgroups = len(data_list) // subgroup_size ## 一共有多少組 subgroup
+    grouped_data_ls = [data_list[i:i+subgroup_size] for i in range(0, n_subgroups*subgroup_size, subgroup_size)]
     
-    ## 留下最後一組的程式碼如下，以下方法將把不足的最後一組以中位數方式補齊
+    ## 留下最後一組的程式碼如下，如最後一組小於 sample size，則將把最後一組不足的 sample 以中位數方式補齊
     # if len(data_ls) % sample_size:
     #     last_sample = data_ls[n_groups * sample_size:]
     #     while len(last_sample) < sample_size:
@@ -161,12 +162,13 @@ def grouping_samples(data_ls:list, subgroup_size:int):
     
     return grouped_data_ls, n_subgroups
 #%%
-def x_bar_S (phase1_ls, phase2_ls, subgroup_size=30, manufacturing_anomaly=False, measurment_anomaly=False, window_size=10, alpha=0.05, stitle="x bar with S chart", \
-        xlabel="subgroup", ylabel=["subgroup x bar", "subgroup S"], path="", fast=False, save_fig=False):
+def x_bar_S (phase1_list, phase2_list, subgroup_size=30, manufacturing_anomaly=False, measurment_anomaly=False, window_size=10, alpha=0.05, stitle="x bar with S chart", \
+        xlabel="subgroup", ylabel=["subgroup x bar", "subgroup S"], path=""):
 
     ## 把 phase1, phase2 的資料依照 sample size 分好
-    grouped_x_phase1, n_subgroups_phase1 = grouping_samples(data_ls=phase1_ls, subgroup_size=subgroup_size)
-    grouped_x_phase2, n_subgroups_phase2 = grouping_samples(data_ls=phase2_ls, subgroup_size=subgroup_size)
+    ## data_list: 要根據 subgroup_size 切割的資料, subgroup_size: 幾筆資料視為一組
+    grouped_x_phase1, n_subgroups_phase1 = grouping_samples(data_list=phase1_list, subgroup_size=subgroup_size)
+    grouped_x_phase2, n_subgroups_phase2 = grouping_samples(data_list=phase2_list, subgroup_size=subgroup_size)
 
     ## 設定 x bar S chart 的各種參數
     c4 = C4[subgroup_size]
@@ -198,27 +200,28 @@ def x_bar_S (phase1_ls, phase2_ls, subgroup_size=30, manufacturing_anomaly=False
             slided_s = s_phase2[i:i+window_size]
             
             ## 判斷時窗區段的資料是否有異常
+            ## x_bar (list): X bar chart 依照移動時窗所取出的值, s (list): S chart 依照移動時窗所取出的值, S_ucl (float): S chart 的 UCL, alpha (float): 顯著水準
             warning_str = detecting_sliding_anomaly(x_bar=slided_x_bar, s=slided_s, S_ucl=S_ucl, alpha=alpha)
             
-            ## 判斷異常內容與紀錄異常資料的 index
+            ## 判斷與紀錄異常資料的 index
             if "anomaly" not in warning_str: continue
             if manufacturing_anomaly and "manufacturing anomaly" in warning_str:
                 manufacturing_indice.append(i)
             if measurment_anomaly and "measurement anomaly" in warning_str:
                 measurement_indice.append(i)
 
-    ## don't plot control chart to save time
-    if fast:
-        return x_bar_phase2, s_phase2, manufacturing_indice, measurement_indice, Xbar_ucl, Xbar_lcl, Xbar_cl, S_ucl
     
-    ## plot x bar S chart
-    ## figsize: 圖片大小
-    plt.figure(figsize=(200, 100))
+    ## 繪製 x bar S chart
+    ## figsize: 圖片大小, dpi:解析度
+    plt.figure(figsize=(200, 100), dpi=100)
     
     ## 圖片會分上下兩張子圖繪製，上方是 x bar chart，下方是 S chart
     ## x bar chart
+    ## subplot(2, 1, 1): 在圖片 2 列 1 欄的排列中，在編號為 1 的地方繪製子圖
     plt.subplot(2, 1, 1)
-    draw_control_chart(data_phase2=x_bar_phase2, cl=Xbar_cl, sigma=Xbar_sigma, ucl=Xbar_ucl, lcl=Xbar_lcl, stitle="x bar chart %s" %stitle, sx=False, sy=ylabel[0])
+    ## data_phase2: phase2 的資料, cl: phase1 的 cl, sigma: phase1 的 sigma, ucl: phase1 的 ucl, lcl: phase1 的 lcl, stitle: 標題文字, sx: x 軸的文字, sy: y 軸文字
+    draw_control_chart(data_phase2=x_bar_phase2, cl=Xbar_cl, sigma=Xbar_sigma, ucl=Xbar_ucl, lcl=Xbar_lcl, stitle="x bar chart %s" %stitle, sy=ylabel[0])
+    ## indice (list): 不同段異常資料的起始 index 值, window_size (int): 移動時窗大小, color (str): 要使用的顏色
     mark_anomaly(indice=manufacturing_indice, data_phase2=x_bar_phase2, window_size=window_size, color="brown") # 棕色給製程異常
     mark_anomaly(indice=measurement_indice, data_phase2=x_bar_phase2, window_size=window_size, color="purple") # 紫色給量測異常
     
@@ -228,8 +231,7 @@ def x_bar_S (phase1_ls, phase2_ls, subgroup_size=30, manufacturing_anomaly=False
     mark_anomaly(indice=manufacturing_indice, data_phase2=s_phase2, window_size=window_size, color="brown")
     mark_anomaly(indice=measurement_indice, data_phase2=s_phase2, window_size=window_size, color="purple")
     
-    if save_fig:
-        plt.savefig("%s%s.png" %(path, stitle))
+    plt.savefig("%s%s.png" %(path, stitle))
         
     return x_bar_phase2, s_phase2, manufacturing_indice, measurement_indice, Xbar_ucl, Xbar_lcl, Xbar_cl, S_ucl
 #%%
@@ -239,5 +241,5 @@ if __name__ == "__main__":
     phase2 = np.random.normal(size=2000, loc=.1, scale=.3)+np.arange(1, 3, 0.2).tolist()*200
     #%%
     # stuff = x_bar_S(phase1_ls=phase1, phase2_ls=phase2v2)
-    stuff = x_bar_S(phase1_ls=phase1, phase2_ls=phase2, measurment_anomaly=True, manufacturing_anomaly=True, save_fig=True)
+    stuff = x_bar_S(phase1_list=phase1, phase2_list=phase2, measurment_anomaly=True, manufacturing_anomaly=True, save_fig=True)
     #%%

@@ -16,7 +16,7 @@ def detect_outlier(data_1:pd.Series, threshold:float):
             outliers[id] = data_1[id]
     return outliers
 #%%
-def chamber2chamber(df:pd.DataFrame, col_groupby:str, col_value:str, stitle="chamber", xlabel="all", ylabel="machine", path="", fast=False, save_fig=False):
+def chamber2chamber(df:pd.DataFrame, col_groupby:str, col_value:str, stitle="chamber", xlabel="all", ylabel="machine", path="", ):
     
     sta_method="std"
     if "mean" == sta_method:
@@ -28,20 +28,16 @@ def chamber2chamber(df:pd.DataFrame, col_groupby:str, col_value:str, stitle="cha
     elif "std" == sta_method:
         values = df.groupby(by=col_groupby).std()[col_value]
     
-    
+    ## threshold: 超過平均值多少標準差視為離群資料
     group1 = detect_outlier(values, threshold=2)
     group2 = detect_outlier(values, threshold=3)
-    for key3 in group2.keys():
-        group1.pop(key3)
+    for key2 in group2.keys():
+        group1.pop(key2)
     group1_df = pd.DataFrame.from_dict(group1, orient='index', columns=[col_value])
     group2_df = pd.DataFrame.from_dict(group2, orient='index', columns=[col_value])
-    if fast:
-        return group1_df, group2_df
-    title_size = 150
-    lable_size = 100
-    tick_size = 100
-    text_size = 100
-    plt.figure(figsize=(200, 100))
+    
+    ## figsize:圖片大小, dpi:解析度, linewidth:線條寬度, linestyle: 線條樣式, color:線條顏色, markersize:點大小, fontsize:字大小, label: 線段標示,
+    plt.figure(figsize=(200, 100), dpi=100)
     # https://matplotlib.org/stable/gallery/statistics/boxplot.html
     plt.boxplot(
         values, showmeans=True, meanline=True, 
@@ -52,18 +48,19 @@ def chamber2chamber(df:pd.DataFrame, col_groupby:str, col_value:str, stitle="cha
         meanprops=dict(linewidth=20, linestyle='--', color="purple"), 
         flierprops=dict(markersize=50, marker='o', markerfacecolor='black'), 
         )
-    plt.title("%s" %stitle, fontsize=title_size)
-    plt.xlabel("%s" %xlabel, fontsize=lable_size)
-    plt.ylabel("%s" %ylabel, fontsize=lable_size)
-    plt.xticks(fontsize=tick_size)
-    plt.yticks(fontsize=tick_size)
-    for key3, value3 in group2.items():
-        plt.text(x=1.08, y=value3, s=key3, fontsize=text_size, c="red")
-    for key2, value2 in group1.items():
-        plt.text(x=1.08, y=value2, s=key2, fontsize=text_size, c="blue")
+    
+    plt.title("%s" %stitle, fontsize=150)
+    plt.xlabel("%s" %xlabel, fontsize=100)
+    plt.ylabel("%s" %ylabel, fontsize=100)
+    plt.xticks(fontsize=100)
+    plt.yticks(fontsize=100)
+    for key2, value2 in group2.items():
+        ## x: 文字顯示的 x 軸位置, y: 文字顯示的 y 軸位置, s: 顯示文字內容, c: 文字顏色
+        plt.text(x=1.08, y=value2, s=key2, fontsize=100, color="red")
+    for key1, value1 in group1.items():
+        plt.text(x=1.08, y=value1, s=key1, fontsize=100, color="blue")
     plt.tight_layout()
-    if save_fig:        
-        plt.savefig("%s%s.png" %(path, stitle))
+    plt.savefig("%s%s.png" %(path, stitle))
     plt.show()
     return group1_df, group2_df
 #%%
