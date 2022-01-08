@@ -31,7 +31,7 @@ def ewma(phase1_list, phase2_list, alpha, L, stitle, xlabel, ylabel, path=""):
 #     figsize:圖片大小, dpi:解析度, linewidth:線條寬度, color:線條顏色, markersize:點大小, label:線段標示, fontsize:字大小, labelpad:標籤和 x 軸之間的間距
     plt.figure(figsize=(200,100),dpi=100,linewidth = 20)
     plt.plot(time,z,color = 'k', marker='o',markersize = 50, label="value",linewidth =20)
-    plt.title('%s' %stitle, fontsize=150)
+    plt.title(f"{stitle}", fontsize=150)
     plt.xticks(fontsize=100)
     plt.yticks(fontsize=100)
     plt.xlabel(f"{xlabel}", fontsize=100, labelpad = 15)
