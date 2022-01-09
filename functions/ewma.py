@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def ewma(phase1_list, phase2_list, alpha, L, stitle, xlabel, ylabel, path=""):
+def ewma(phase1_list, phase2_list, alpha="0.05", L="3", stitle="EWMA Chart", xlabel="time", ylabel="ewma_value", path=""):
   
 #     計算control limits
     z0 = np.mean(phase1_list)
