@@ -49,9 +49,9 @@ def chamber2chamber(df:pd.DataFrame, col_groupby:str, col_value:str, stitle="cha
         flierprops=dict(markersize=50, marker='o', markerfacecolor='black'), 
         )
     
-    plt.title("%s" %stitle, fontsize=150)
-    plt.xlabel("%s" %xlabel, fontsize=100)
-    plt.ylabel("%s" %ylabel, fontsize=100)
+    plt.title(stitle, fontsize=150)
+    plt.xlabel(xlabel, fontsize=100)
+    plt.ylabel(ylabel, fontsize=100)
     plt.xticks(fontsize=100)
     plt.yticks(fontsize=100)
     for key2, value2 in group2.items():
@@ -60,7 +60,7 @@ def chamber2chamber(df:pd.DataFrame, col_groupby:str, col_value:str, stitle="cha
     for key1, value1 in group1.items():
         plt.text(x=1.08, y=value1, s=key1, fontsize=100, color="blue")
     plt.tight_layout()
-    plt.savefig("%s%s.png" %(path, stitle))
+    plt.savefig("{path}{stitle}.png")
     plt.show()
     return group1_df, group2_df
 #%%
