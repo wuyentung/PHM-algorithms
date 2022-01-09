@@ -106,9 +106,9 @@ def draw_control_chart(data_phase2, cl, sigma, ucl, lcl, stitle, sy, sx=False, t
     
     ## x: 文字顯示的 x 軸位置, y: 文字顯示的 y 軸位置, s: 顯示文字內容, c: 文字顏色
     ## 顯示管制圖 UCL, LCL, CL 上的數值
-    plt.text(x=-0.05, y=ucl, s="UCL={ucl}", fontsize=text_size, c="red")
-    plt.text(x=-0.05, y=lcl, s="LCL={lcl}", fontsize=text_size, c="red")
-    plt.text(x=-0.065, y=cl, s="center line={cl}", fontsize=text_size, c="blue")
+    plt.text(x=-0.05, y=ucl, s=f"UCL={ucl}", fontsize=text_size, c="red")
+    plt.text(x=-0.05, y=lcl, s=f"LCL={lcl}", fontsize=text_size, c="red")
+    plt.text(x=-0.065, y=cl, s=f"center line={cl}", fontsize=text_size, c="blue")
     
     ## 設定管制圖標題
     plt.title(stitle, fontsize=title_size)
@@ -220,18 +220,18 @@ def x_bar_S (phase1_list, phase2_list, subgroup_size=30, manufacturing_anomaly=F
     ## subplot(2, 1, 1): 在圖片 2 列 1 欄的排列中，在編號為 1 的地方繪製子圖
     plt.subplot(2, 1, 1)
     ## data_phase2: phase2 的資料, cl: phase1 的 cl, sigma: phase1 的 sigma, ucl: phase1 的 ucl, lcl: phase1 的 lcl, stitle: 標題文字, sx: x 軸的文字, sy: y 軸文字
-    draw_control_chart(data_phase2=x_bar_phase2, cl=Xbar_cl, sigma=Xbar_sigma, ucl=Xbar_ucl, lcl=Xbar_lcl, stitle="x bar chart {stitle}", sy=ylabel[0])
+    draw_control_chart(data_phase2=x_bar_phase2, cl=Xbar_cl, sigma=Xbar_sigma, ucl=Xbar_ucl, lcl=Xbar_lcl, stitle=f"x bar chart {stitle}", sy=ylabel[0])
     ## indice (list): 不同段異常資料的起始 index 值, window_size (int): 移動時窗大小, color (str): 要使用的顏色
     mark_anomaly(indice=manufacturing_indice, data_phase2=x_bar_phase2, window_size=window_size, color="brown") # 棕色給製程異常
     mark_anomaly(indice=measurement_indice, data_phase2=x_bar_phase2, window_size=window_size, color="purple") # 紫色給量測異常
     
     ## S chart
     plt.subplot(2, 1, 2)
-    draw_control_chart(data_phase2=s_phase2, cl=S_cl, sigma=S_sigma, ucl=S_ucl, lcl=S_lcl, stitle="S chart {stitle}", sx=xlabel, sy=ylabel[1])
+    draw_control_chart(data_phase2=s_phase2, cl=S_cl, sigma=S_sigma, ucl=S_ucl, lcl=S_lcl, stitle=f"S chart {stitle}", sx=xlabel, sy=ylabel[1])
     mark_anomaly(indice=manufacturing_indice, data_phase2=s_phase2, window_size=window_size, color="brown")
     mark_anomaly(indice=measurement_indice, data_phase2=s_phase2, window_size=window_size, color="purple")
     
-    plt.savefig("{path}{stitle}.png")
+    plt.savefig(f"{path}{stitle}.png")
         
     return x_bar_phase2, s_phase2, manufacturing_indice, measurement_indice, Xbar_ucl, Xbar_lcl, Xbar_cl, S_ucl
 #%%

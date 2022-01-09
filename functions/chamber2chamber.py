@@ -5,6 +5,7 @@ import scipy as sc
 import matplotlib.pyplot as plt
 #%%
 def detect_outlier(data_1:pd.Series, threshold:float):
+    ## 檢查資料中有哪些資料是離群值
     outliers={}
     
     mean_1 = np.mean(data_1)
@@ -60,7 +61,7 @@ def chamber2chamber(df:pd.DataFrame, col_groupby:str, col_value:str, stitle="cha
     for key1, value1 in group1.items():
         plt.text(x=1.08, y=value1, s=key1, fontsize=100, color="blue")
     plt.tight_layout()
-    plt.savefig("{path}{stitle}.png")
+    plt.savefig(f"{path}{stitle}.png")
     plt.show()
     return group1_df, group2_df
 #%%
