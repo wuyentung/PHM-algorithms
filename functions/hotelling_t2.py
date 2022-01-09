@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import stats
 
-def hotelling_t2(phase1_df, phase2_df, alpha, stitle, xlabel, ylabel, path=""):
+def hotelling_t2(phase1_df, phase2_df, alpha=0.05, stitle="Hotelling's T-sqaured Chart", xlabel="time", ylabel="t2_value", path=""):
     
 #     計算t2值
     out = []
