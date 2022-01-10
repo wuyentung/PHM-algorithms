@@ -7,17 +7,17 @@ def hotelling_t2(phase1_df, phase2_df, alpha=0.05, stitle="Hotelling's T-sqaured
     
 #     計算t2值
     out = []
-    for i in range(len(phase1_df)):
+    for i in range(len(phase2_df)):
         #difference matrix for v
-        v = phase1_df.diff()[1:] 
-        s = np.cov(phase1_df.T)
-        x = np.array((phase1_df - phase1_df.mean()).iloc[i]).reshape(-1,1)
+        v = phase2_df.diff()[1:] 
+        s = np.cov(phase2_df.T)
+        x = np.array((phase2_df - phase2_df.mean()).iloc[i]).reshape(-1,1)
         t = np.dot(x.T,np.linalg.pinv(s))
         t = np.dot(t,x)[0][0]
         out.append(t)
         
 #     計算control limits
-    m,f = phase2_df.shape
+    m,f = phase1_df.shape
     alpha=alpha
     q = (2*((m-1)**2)) / (3*m-4)
     ucl = float(((m - 1) * (m - 1) / m)* (stats.beta(f / 2, ((m - f - 1) / 2)).ppf(1-alpha/2)),)
