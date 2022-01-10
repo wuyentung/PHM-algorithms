@@ -35,4 +35,4 @@ def hotelling_t2(phase1_df, phase2_df, alpha=0.05, stitle="Hotelling's T-sqaured
     plt.legend(loc = "best", fontsize=100)
     plt.savefig(f"{path}{stitle}.png")
     plt.show()
-    return out
+    return out, ucl
