@@ -25,7 +25,7 @@ def hotelling_t2(phase1_df, phase2_df, alpha=0.05, stitle="Hotelling's T-sqaured
 #     繪圖
 #     figsize:圖片大小, dpi:解析度, linewidth:線條寬度, color:線條顏色, markersize:點大小, label:線段標示, fontsize:字大小, labelpad:標籤和 x 軸之間的間距
     plt.figure(figsize=(200,100),dpi=100,linewidth = 20)
-    plt.title(f'{stitle}', fontsize=10)
+    plt.title(f"{stitle}", fontsize=100)
     plt.plot(out,color = 'k',markersize = 50, label="value",linewidth =20)
     plt.axhline(y = ucl,color='red', linewidth=20)
     plt.xticks(fontsize=100)
