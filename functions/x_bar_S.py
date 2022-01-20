@@ -241,5 +241,5 @@ if __name__ == "__main__":
     phase2 = np.random.normal(size=2000, loc=.1, scale=.3)+np.arange(1, 3, 0.2).tolist()*200
     #%%
     # stuff = x_bar_S(phase1_ls=phase1, phase2_ls=phase2v2)
-    stuff = x_bar_S(phase1_list=phase1, phase2_list=phase2, measurment_anomaly=True, manufacturing_anomaly=True, save_fig=True)
+    stuff = x_bar_S(phase1_list=phase1, phase2_list=phase2, measurment_anomaly=True, manufacturing_anomaly=True)
     #%%
