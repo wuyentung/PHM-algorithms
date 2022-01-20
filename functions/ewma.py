@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 def ewma(phase1_list, phase2_list, alpha="0.05", L="3", stitle="EWMA Chart", xlabel="time", ylabel="ewma_value", path=""):
   
 #     計算control limits
+    alpha = float(alpha)
+    L = float(L)
     z0 = np.mean(phase1_list)
     sigma = np.std(phase1_list)
     lcl = []
