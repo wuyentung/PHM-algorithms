@@ -42,4 +42,11 @@ def ewma(phase1_list, phase2_list, alpha="0.05", L="3", stitle="EWMA Chart", xla
     plt.savefig(f"{path}{stitle}.png")
     plt.show()
     return z
-        
+#%%
+## unit test
+if __name__ == "__main__":
+    phase1 = np.random.normal(size=200).astype('f')
+    phase2 = np.random.normal(size=200, loc=.1, scale=.3)+np.arange(0.1, 0.5, 0.002)
+    #%%
+    stuff = ewma(phase1_list=phase1, phase2_list=phase2)
+    #%%
