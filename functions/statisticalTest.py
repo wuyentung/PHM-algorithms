@@ -70,6 +70,7 @@ def statistical_test(list1, list2, stitle="statistical_test", xlabel="time", yla
     d, paths = dtw.warping_paths(list1, list2)
     best_path = dtw.best_path(paths)
     ## filename: 存檔的名稱
+    dtwvis.plot_warpingpaths(list1, list2, paths, best_path)
     dtwvis.plot_warpingpaths(list1, list2, paths, best_path, filename=f"{path}DTW_{stitle}.png")
     
     return [mean1, mean2], pvalue_mean, [var1, var2], pvalue_var, [skew1, skew2], [kurt1, kurt2], pvalue_ks, correlation, dtw_distance
