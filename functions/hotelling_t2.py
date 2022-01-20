@@ -36,3 +36,14 @@ def hotelling_t2(phase1_df, phase2_df, alpha=0.05, stitle="Hotelling's T-sqaured
     plt.savefig(f"{path}{stitle}.png")
     plt.show()
     return out, ucl
+
+#%%
+## unit test
+if __name__ == "__main__":
+    df1 = pd.DataFrame(np.random.normal(50,2,size=(100, 10)), columns=list('ABCDEFGHIJ'))
+    df2_1 = pd.DataFrame(np.random.randint(0,200,size=(50, 10)), columns=list('ABCDEFGHIJ'))
+    df2_2 = pd.DataFrame(np.random.randint(100,200,size=(50, 10)), columns=list('ABCDEFGHIJ'))
+    df2 = pd.concat([df2_1, df2_2])
+    #%%
+    t2_value, ucl = hotelling_t2(phase1_df = df1, phase2_df = df2)
+#%%
