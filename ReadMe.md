@@ -44,4 +44,4 @@ The EWMA control chart help us detect time-dependent data with sliding window an
 ## hotelling_t2
 The [Hotelling's T-squared](https://www.spcforexcel.com/knowledge/variable-control-charts/hotelling-t2-control-chart) control chart aims to identify the feature distance between multivirate data, under the assumption that the data is independently collected. Data point is regards to be anomaly once its t-squared value is too large, i.e., jump over UCL. However, Hotelling's T-squared control chart can be too sensitive if we break the assumptions of Hotelling's T-squared ([see](https://online.stat.psu.edu/stat505/lesson/7/7.2/7.2.6)).
 - Hotelling's T-squared control chart example:  
-<img src="https://github.com/wuyentung/PHM-algorithms/blob/master/images/Hotelling's T-squared Chart.png" height="500" />  
+<img src="https://github.com/wuyentung/PHM-algorithms/blob/to_public/images/Hotelling's%20T-sqaured%20Chart.png" height="500" />  
