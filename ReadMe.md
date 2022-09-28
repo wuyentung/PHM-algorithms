@@ -16,7 +16,8 @@ Where the statistical tests are:
 |correlation| the correlation of two data|
 |dtw distance| the [dynamic time wrapping](https://dtaidistance.readthedocs.io/en/latest/usage/dtw.html) distance of two data, the smaller value the closer distance|
 - The visualization of two data:  
-<img src="https://github.com/wuyentung/PHM-algorithms/blob/master/images/折線圖_statistical_test.png" height="500" />  
+<img src="https://github.com/wuyentung/PHM-algorithms/blob/master/images/折線圖_statistical_test.png" height="500" />   
+
 - The DTW plot:  
 <img src="https://github.com/wuyentung/PHM-algorithms/blob/master/images/DTW_statistical_test.png" height="500" />  
 
