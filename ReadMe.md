@@ -28,12 +28,12 @@ Where the statistical tests are:
 |z score| detect outliers|
 
 ## x_bar_S
-$\overline X$ bar S control chart is an univirate method for single machine to detect anomalies. By watching the trends of the samples, we can identify manufacturing anomaly and measurement anomaly.  
+$\overline X$  and S control chart is an univirate method for single machine to detect anomalies. By watching the trends of the samples, we can identify manufacturing anomaly and measurement anomaly.  
 |Submethod|Usage|
 |:---:|:---:|
 |sliding window| detect anomaly with trend factor|
 
-- $\overline X$ S control chart example:  
+- $\overline X$  and S control chart example:  
 <img src="https://github.com/wuyentung/PHM-algorithms/blob/master/images/x bar with S chart.png" height="500" />  
 
 ## ewma
