@@ -15,7 +15,7 @@ Where the statistical tests are:
 |KS test| check the distribution of both data is identical or not, the distribution is different if pvalue < 0.01|
 |correlation| the correlation of two data|
 |dtw distance| the [dynamic time wrapping](https://dtaidistance.readthedocs.io/en/latest/usage/dtw.html) distance of two data, the smaller value the closer distance|
-<img src="https://github.com/wuyentung/Master-Thesis/blob/main/IMAGES/methodology%20flowchart.png" width="500" height="500" />
+<img src="https://github.com/wuyentung/PHM-algorithms/blob/master/images/折線圖_statistical_test.png" height="500" />  
 ## chamber2chamber
 - chamber to chamber: comparing the standard deviation of all machines to find the unstable ones. You could take out extreme data points in advance to prevent false alarm. 
 
