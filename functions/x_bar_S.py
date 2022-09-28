@@ -237,8 +237,8 @@ def x_bar_S (phase1_list, phase2_list, subgroup_size=30, manufacturing_anomaly=F
 #%%
 ## unit test
 if __name__ == "__main__":
-    phase1 = np.random.normal(size=200)
-    phase2 = np.random.normal(size=2000, loc=.1, scale=.3)+np.arange(1, 3, 0.2).tolist()*200
+    phase1 = np.random.normal(size=200, loc=0, scale=1)
+    phase2 = np.random.normal(size=2000, loc=0, scale=1.1)+np.concatenate(([0]*1000, np.repeat(np.arange(1, 2, 0.1), 20), [0]*800), axis=None)
     #%%
     # stuff = x_bar_S(phase1_ls=phase1, phase2_ls=phase2v2)
     stuff = x_bar_S(phase1_list=phase1, phase2_list=phase2, measurment_anomaly=True, manufacturing_anomaly=True)
