@@ -1,7 +1,7 @@
 # Prognostics and Health Management (PHM) Algorithms
 In this repository, we introduce nonparametric method for examining machine healthiness. Including methodology to identify maintainence effectiveness with the features and PHM algorithms for uni- and multi-virate data.  
 - The main.py module is the sample for user to set the parameter for each algorithm.  
-- The unit test code is writen in each module, and can be precess immediately.  
+- The unit test code is writen in each module, and can be precess immediately. Each module is introduced below...
 
 ## statisticalTest
 In practice, the main challenge for PHM in the firest step is to identify the correlation between data and maintianence. Under the assumption that the maintianence will make machine more stable, we use statistical test for two slice of univirate data to check the overall correlation between each.  
@@ -15,7 +15,7 @@ Where the statistical tests are:
 |KS test| check the distribution of both data is identical or not, the distribution is different if pvalue < 0.01|
 |correlation| the correlation of two data|
 |dtw distance| the [dynamic time wrapping](https://dtaidistance.readthedocs.io/en/latest/usage/dtw.html) distance of two data, the smaller value the closer distance|
-
+<img src="https://github.com/wuyentung/Master-Thesis/blob/main/IMAGES/methodology%20flowchart.png" width="500" height="500" />
 ## chamber2chamber
 - chamber to chamber: comparing the standard deviation of all machines to find the unstable ones. You could take out extreme data points in advance to prevent false alarm. 
 
