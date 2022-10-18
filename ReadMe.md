@@ -38,7 +38,7 @@ $\overline X$  and S control chart is an univirate method for single machine to 
 <img src="https://github.com/wuyentung/PHM-algorithms/blob/master/images/x bar with S chart.png" height="500" />  
 
 ## ewma
-The EWMA control chart help us detect time-dependent data with sliding window and weights. It is univirate version in this implementation, while EWMA control chart can be used in multivirate feature once the determinant of slided data is calculated.  
+The EWMA control chart help us detect time-dependent data with sliding window and weights. The [EWMA](https://en.wikipedia.org/wiki/EWMA_chart) chart is sensitive to small shifts in the process mean, but does not match the ability of Shewhart-style charts (namely the $\overline X$ and $R$, and $\overline X$ and $S$ charts) to detect larger shifts. It is univirate version in this implementation, while EWMA control chart can be used in multivirate feature once the determinant of slided data is calculated.  
 - EWMA control chart example:  
 <img src="https://github.com/wuyentung/PHM-algorithms/blob/master/images/EWMA Chart.png" height="500" />  
 
